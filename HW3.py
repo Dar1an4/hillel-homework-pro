@@ -3,22 +3,22 @@ class Url:
     def __init__(self, scheme='', authority='', path='', query='', fragment=''):
         self.scheme: str = scheme
         self.authority: str = authority
-        self.path: list or str = path if type(path) is str else ('/'+'/'.join(path))
-        self.query = Url.fquery(query)
+        self.path: list or str = path if type(path) is str else ('/'+'/'.join(path))  # check given arg and rewrite if it not default and if it list
+        self.query = Url.fquery(query)  # check given arg and rewrite if it not default and if it dict
         self.fragment = fragment
 
-    def __str__(self):
+    def __str__(self) -> str:
         answer = f'{self.scheme}://{self.authority}{self.path}{self.query}{self.fragment}'
         return answer
 
-    def __eq__(self, arg):
+    def __eq__(self, arg) -> bool:
         if str(self) == str(arg):
             return True
         else:
             return False
 
     @staticmethod
-    def fquery(query):
+    def fquery(query: str | dict) -> str:
         list_query = []
         if type(query) is str and query != '':
             return f'?q={query}'
@@ -57,18 +57,17 @@ class WikiUrl(HttpsUrl):
 
 
 class UrlCreator(Url):
-    get_attr_list = []
-    callable_list = []
+    attr_list = []
 
     def __init__(self, scheme='', authority='', path='', query='', fragment=''):
         super().__init__(scheme, authority, path, query, fragment)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: str, **kwargs: dict):
         if args:
-            UrlCreator.callable_list.clear()
+            UrlCreator.attr_list.clear()
             for i in args:
-                UrlCreator.callable_list.append(i)
-                self.path = '/' + '/'.join(self.callable_list)
+                UrlCreator.attr_list.append(i)
+                self.path = '/' + '/'.join(self.attr_list)
         if kwargs:
             list_query = []
             for i, k in kwargs.items():
@@ -79,12 +78,12 @@ class UrlCreator(Url):
             self.query = f"?{''.join(list_query)[0:-1]}"
         return self
 
-    def _create(self):
+    def _create(self) -> str:
         return self.__str__()
 
     def __getattr__(self, attr):
-        self.callable_list.append(attr)
-        self.path = '/' + '/'.join(self.callable_list)
+        self.attr_list.append(attr)
+        self.path = '/' + '/'.join(self.attr_list)
         return self
 
 
@@ -102,4 +101,7 @@ assert url_creator('api', 'v1', 'list', q='my_list') == 'https://docs.python.org
 assert url_creator('3').search(q='getattr', check_keywords='yes', area='default')._create() == 'https://docs.python.org/3/search?q=getattr&check_keywords=yes&area=default'
 
 
-
+print(url_creator.scheme)
+print(url_creator.authority)
+print(url_creator.path)
+print(url_creator.query)
