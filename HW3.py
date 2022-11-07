@@ -5,7 +5,7 @@ class Url:
         self.authority: str = authority
         self.path: list or str = path if type(path) is str else ('/'+'/'.join(path))  # check given arg and rewrite if it not default and if it list
         self.query = Url.fquery(query)  # check given arg and rewrite if it not default and if it dict
-        self.fragment = fragment
+        self.fragment = fragment if fragment == '' else '#' + fragment
 
     def __str__(self) -> str:
         answer = f'{self.scheme}://{self.authority}{self.path}{self.query}{self.fragment}'
@@ -91,3 +91,4 @@ print(url_creator.scheme)
 print(url_creator.authority)
 print(url_creator.path)
 print(url_creator.query)
+print(url_creator.fragment)
