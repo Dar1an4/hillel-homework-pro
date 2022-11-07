@@ -12,24 +12,14 @@ class Url:
         return answer
 
     def __eq__(self, arg) -> bool:
-        if str(self) == str(arg):
-            return True
-        else:
-            return False
+        return str(self) == str(arg)
 
     @staticmethod
     def fquery(query: str | dict) -> str:
-        list_query = []
-        if type(query) is str and query != '':
-            return f'?q={query}'
-        elif type(query) is dict:
-            for i, k in query.items():
-                list_query.append(i)
-                list_query.append('=')
-                list_query.append(k)
-                list_query.append('&')
-            return f"?{''.join(list_query)[0:-1]}"
-        return ''
+        list_query = [i + '=' + k + '&' for i, k in query.items()] if type(query) is dict \
+            else '' if query == '' else f'?q={query}'
+        answer = ('?' + ''.join(list_query)[0:-1]) if type(list_query) is list else list_query
+        return answer
 
 
 class HttpsUrl(Url):
@@ -69,12 +59,7 @@ class UrlCreator(Url):
                 UrlCreator.attr_list.append(i)
                 self.path = '/' + '/'.join(self.attr_list)
         if kwargs:
-            list_query = []
-            for i, k in kwargs.items():
-                list_query.append(i)
-                list_query.append('=')
-                list_query.append(k)
-                list_query.append('&')
+            list_query = [i + '=' + k + '&' for i, k in kwargs.items()]
             self.query = f"?{''.join(list_query)[0:-1]}"
         return self
 
@@ -98,7 +83,8 @@ url_creator = UrlCreator(scheme='https', authority='docs.python.org')
 assert url_creator.docs.v1.api.list == 'https://docs.python.org/docs/v1/api/list'
 assert url_creator('api', 'v1', 'list') == 'https://docs.python.org/api/v1/list'
 assert url_creator('api', 'v1', 'list', q='my_list') == 'https://docs.python.org/api/v1/list?q=my_list'
-assert url_creator('3').search(q='getattr', check_keywords='yes', area='default')._create() == 'https://docs.python.org/3/search?q=getattr&check_keywords=yes&area=default'
+assert url_creator('3').search(q='getattr', check_keywords='yes', area='default')._create() == \
+       'https://docs.python.org/3/search?q=getattr&check_keywords=yes&area=default'
 
 
 print(url_creator.scheme)
