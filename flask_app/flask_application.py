@@ -1,9 +1,9 @@
 import string
 
-from random import shuffle, randint, choice
-from flask import Flask, request
+from random import shuffle, choice
 from datetime import datetime
 
+from flask import Flask, request
 
 app = Flask(__name__)
 
